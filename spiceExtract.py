@@ -15,6 +15,8 @@ def parseSpiceOut(filePath, fileList):
 
     spOutList = open(filePath + fileList)
 
+    concentrationDF = pd.DataFrame()
+
     for line in spOutList:
         line = line.replace("\n", "")
         inputFileBase = line.replace(".sp", "_o.tr0")
@@ -30,6 +32,9 @@ def parseSpiceOut(filePath, fileList):
 
         TR_c.append(df.loc[0, outputC])
 
+        concentrationDF = concentrationDF({'Outlet':hold, 'Chemical':hold, 'OutConcentration':outputC})
+
+    
 
     total_C = sum(TR_c)
 

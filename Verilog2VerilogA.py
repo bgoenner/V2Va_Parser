@@ -77,10 +77,17 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, out
     SP_outputFile_pathA= inFile_Verilog.split('/')[:-1]
     SP_outputFile_path = ""
 
+    # build output file path
     for s in SP_outputFile_pathA: SP_outputFile_path += s + "/"
+
+    # load device file
+    devFile = SP_outputFile_path + "/devices.csv"
+    devDF = pd.read_csv(devFile)
 
     SP_outputFile_path = SP_outputFile_path + "spiceFiles/" 
     SP_outputFile_name = SP_outputFile_path + inFile_Verilog.split('/')[-1]
+
+    
 
     if not os.path.exists(SP_outputFile_path):
         os.mkdir(SP_outputFile_path)
@@ -88,15 +95,25 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, out
     SP_outputFile_list = SP_outputFile_path + "spiceList"
     SP_list = open(SP_outputFile_list, 'w')
 
-    for soln in solnDF.iterrows():
+
+    # Create soln files
+    createChemSubArrays(solnDF)
+
+    #for soln in solnDF.iterrows():
+    for soln in solnDF.groupby(['Solution']):
         Vfile = open(inFile_Verilog)
         #iExp  = open(initExpress)
         #eExp  = open(endExpress)
 
+        chem = soln[0]
+        chemDF = soln[1]
+
         # write to spice files
         # path/newfile/file.v
-        SP_outputFile_name_new = SP_outputFile_name[:-2] + '_' + soln[1].loc['inlet'] + '.sp'
-                
+        #SP_outputFile_name_new = SP_outputFile_name[:-2] + '_' + soln[1].loc['inlet'] + '.sp'
+        SP_outputFile_name_new = SP_outputFile_name[:-2] + '_' + chem + '.sp'
+
+
         SPfile = open(SP_outputFile_name_new, '+w')
 
         SP_list.write(SP_outputFile_name_new + '\n')
@@ -160,11 +177,22 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, out
 
                 # create pump devices
                 # we will assume pressure pumping devices
+
+                # get chem concentrations for input
+                #df = chemDF.loc[df['Inlet'] == 'yellow']
+
+                ## remove input and create an array with input names ##
                 params = line.replace('input ', '').replace(' ', '').split(',')
                 for p in params:
-                    VA_line_str += 'X' + str(numberOfComponents) + ' ' + str(p) + '_0 ' + str(p) + '_0c PressurePump pressure=100k '
-                    if str(p) == soln[1].loc['inlet']:
-                        VA_line_str += 'chemConcentration=' + str(soln[1].loc['solutionC']) + ' '
+                    df = chemDF.loc[chemDF['Inlet'] == p]
+                    dev = devDF.loc[devDF['Inlet'] == p]['Device'].values[0]
+                    devVars = devDF.loc[devDF['Inlet'] == p]['DevVars'].values[0] 
+                    VA_line_str += 'X' + str(numberOfComponents) + ' ' + str(p) + '_0 ' + str(p) + '_0c ' + str(dev)  + ' ' + str(devVars) + ' '
+                    if not df.empty:
+                        VA_line_str += 'chemConcentration=' + str(df['InConcentration'].values[0]) + ' '
+                    
+                    #if str(p) == soln[1].loc['inlet']:
+                    #   VA_line_str += 'chemConcentration=' + str(soln[1].loc['solutionC']) + ' '
                     VA_line_str += '\n'
                     numberOfComponents += 1
 
@@ -300,6 +328,16 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, out
         #SPfile.write(''.join(eExp.readlines()))
         SPfile.write(eExp)
 
+def createChemSubArrays(solnDF):
+
+    #g = solnDF.groupby(['Solution'], group_keys=True).apply(lambda x:x)
+
+    #print(g)
+    pass
+    for g in solnDF.groupby(['Solution']):
+        pass
+        print(g)
+        g = g
     
 
 def createSpiceRunScript(outputFileName, numSoln, remoteTestPath):
