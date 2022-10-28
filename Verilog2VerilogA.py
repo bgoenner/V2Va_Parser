@@ -94,7 +94,7 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, out
 
     SP_outputFile_list = SP_outputFile_path + "spiceList"
     SP_list = open(SP_outputFile_list, 'w')
-
+    SP_list.write('OutputFile,Chemical,Outlets\n')
 
     # Create soln files
     createChemSubArrays(solnDF)
@@ -116,7 +116,8 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, out
 
         SPfile = open(SP_outputFile_name_new, '+w')
 
-        SP_list.write(SP_outputFile_name_new + '\n')
+        SP_list.write(SP_outputFile_name_new)
+        SP_list.write(','+chem+',')
         
         #SPfile.write(''.join(iExp.readlines()))
         SPfile.write(iExp)
@@ -217,8 +218,18 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, out
                 for out in outputLine.replace(' ', '').split(','):
                     outputWords.append(out)
 
-                    VA_line_str += 'X' + str(numberOfComponents) + ' ' + str(out) + '_ch 0  ' + str(out) + '_chC outc' + str(outNum) + ' Channel length='
+                    pressureOut = '0'
+                    pressureIn  = str(out) + '_ch'
+
+                    chemIn  = str(out) + '_chC'
+                    chemOut = 'outc' + str(outNum)
+
+                    VA_line_str += 'X' + str(numberOfComponents) + ' ' + pressureIn + ' ' + pressureOut + ' ' + chemIn + ' ' + chemOut + ' Channel length='
                     outNum += 1
+
+                    # track output 
+                    SP_list.write(chemOut + ';')
+
                     # add output wire
                     row = wireLenDF.loc[wireLenDF['wire'] == out]
                     wireLength = row.iloc[0,1]
@@ -326,6 +337,7 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, out
             currentLine = ''
 
         #SPfile.write(''.join(eExp.readlines()))
+        SP_list.write('\n')
         SPfile.write(eExp)
 
 def createChemSubArrays(solnDF):

@@ -13,14 +13,16 @@ def parseSpiceOut(filePath, fileList):
     # for single output this is the output port
     outputC = " v_outc0"
 
-    spOutList = open(filePath + fileList)
+    spOutList = pd.read_csv(filePath + fileList)
 
-    concentrationDF = pd.DataFrame()
+    concentrationDF = pd.DataFrame(columns=['Outlet', 'Chemical', 'OutConcentration'])
 
-    for line in spOutList:
-        line = line.replace("\n", "")
-        inputFileBase = line.replace(".sp", "_o.tr0")
-        csvFile= line.replace(".sp", "_o_tr0.csv")
+    for line in spOutList.iterrows():
+        outFile       = line[1]['OutputFile']#.replace("\n", "")
+        inputFileBase = outFile.replace(".sp", "_o.tr0")
+        csvFile       = outFile.replace(".sp", "_o_tr0.csv")
+
+        chem   = line[1]['Chemical']
 
         import_export(inputFileBase, "csv")
 
@@ -30,11 +32,17 @@ def parseSpiceOut(filePath, fileList):
 
         #print(df.columns)
 
-        TR_c.append(df.loc[0, outputC])
+        outC = df.loc[0, outputC]
+        TR_c.append(outC)
 
-        concentrationDF = concentrationDF({'Outlet':hold, 'Chemical':hold, 'OutConcentration':outputC})
+        outlets = line[1]['Outlets']
+        outletA = outlets.split(';')[:-1]
+
+        for o in outletA:
+            concentrationDF = concentrationDF.append({'Outlet':o, 'Chemical':chem, 'OutConcentration':outC}, ignore_index=True)
 
     
+    concentrationDF.to_csv(filePath + 'chemicalOutput.csv')
 
     total_C = sum(TR_c)
 
