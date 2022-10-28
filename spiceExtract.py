@@ -5,6 +5,9 @@ from hspiceParser import import_export
 import numpy as np
 import pandas as pd
 
+# exception import
+#from  
+
 
 def parseSpiceOut(filePath, fileList):
     TRdata = []
@@ -23,8 +26,14 @@ def parseSpiceOut(filePath, fileList):
         csvFile       = outFile.replace(".sp", "_o_tr0.csv")
 
         chem   = line[1]['Chemical']
-
+        
         import_export(inputFileBase, "csv")
+        
+        try:
+            import_export(inputFileBase, "csv")
+        except:
+            print()
+
 
         df = pd.read_csv(csvFile, delimiter = ",")
 

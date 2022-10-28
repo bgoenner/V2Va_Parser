@@ -16,7 +16,7 @@ library file, or -lib; this can be written into the vmf file
 template file, or -mfsp; this adds additional start and ending file information
 """
 
-def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, outputVerilogFile=None):
+def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, library_csv, outputVerilogFile=None):
 
 
     inputVerilogFile = inputVerilogFile.replace('\\', '/')
@@ -28,7 +28,7 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, out
     #print(inFile_lengths)
     #remoteTestPath = "~/Verilog_Tests/"
 
-    library_csv =    "StandardCellLibrary.csv"
+    #library_csv =    "StandardCellLibrary.csv"
 
     # output file declaration
     if outputVerilogFile == None:
