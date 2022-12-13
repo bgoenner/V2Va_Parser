@@ -17,7 +17,7 @@ template file, or -mfsp; this adds additional start and ending file information
 """
 
 def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, 
-    library_csv, length_file=None, outputVerilogFile=None):
+    library_csv, length_file=None, preRouteSim=False, outputVerilogFile=None):
 
 
     inputVerilogFile = inputVerilogFile.replace('\\', '/')
@@ -25,10 +25,11 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath,
     #inFile_Verilog = "smart_toilet.v"
     inFile_Verilog = inputVerilogFile
     #inFile_lengths = "smart_toilet_lengths.xlsx"
-    if length_file == None:
-        inFile_lengths = inputVerilogFile[:-2] + "_lengths.xlsx"
-    else:
-        inFile_lengths = length_file
+    if not preRouteSim:
+        if length_file == None:
+            inFile_lengths = inputVerilogFile[:-2] + "_lengths.xlsx"
+        else:
+            inFile_lengths = length_file
     #print(inFile_lengths)
     #remoteTestPath = "~/Verilog_Tests/"
 
@@ -66,7 +67,10 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath,
     # Load standard cell library
 
     library = pd.read_csv(library_csv)
-    wireLenDF = pd.read_excel(inFile_lengths)
+
+    wireLenDF = None
+    if not preRouteSim:
+        wireLenDF = pd.read_excel(inFile_lengths)
     #wireLenDF = wireLenDF.set_index([0])
 
     # load solution concentrations
@@ -211,9 +215,15 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath,
                     #print(wireLenDF.columns)
                     #print(wireLenDF.iloc[:,0])
                     # wireLenDF['wire'] == p
-                    row = wireLenDF.loc[wireLenDF.iloc[:,0] == p]
-                    wireLength = row.iloc[0,1]
-                    VA_line_str += str(wireLength) + 'm\n'
+                    #if not preRouteSim:
+                    #    row = wireLenDF.loc[wireLenDF.iloc[:,0] == p]
+                    #    wireLength = row.iloc[0,1]
+                    #    VA_line_str += str(wireLength) + 'm\n'
+                    #else:
+                    #    wireLength = 0
+                    #    VA_line_str += str(wireLength) + 'm\n'
+                    
+                    VA_line_str += getWireLength(wireLenDF, p, preRouteSim)
 
                     inputList.append(p)
 
@@ -240,9 +250,11 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath,
 
                     # add output wire
                     # row = wireLenDF.loc[wireLenDF['wire'] == out]
-                    row = wireLenDF.loc[wireLenDF.iloc[:,0] == out]
-                    wireLength = row.iloc[0,1]
-                    VA_line_str += str(wireLength) + 'm\n\n'
+                    #row = wireLenDF.loc[wireLenDF.iloc[:,0] == out]
+                    #wireLength = row.iloc[0,1]
+                    #VA_line_str += str(wireLength) + 'm\n\n'
+
+                    VA_line_str += getWireLength(wireLenDF, out, preRouteSim)
 
                     numberOfComponents += 1
 
@@ -263,11 +275,11 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath,
                     VA_line_str += 'X' + str(numberOfComponents) + ' ' + str(w) + '_0 ' + str(w) + '_1 ' + ' ' + str(w) + '_0c ' + str(w) + '_1c  ' + 'Channel length='
 
                     #row = wireLenDF.loc[wireLenDF['wire'] == w]
-                    row = wireLenDF.loc[wireLenDF.iloc[:,0] == w]
+                    #row = wireLenDF.loc[wireLenDF.iloc[:,0] == w]
+                    #wireLength = row.iloc[0,1]
+                    #VA_line_str += str(wireLength) + 'm\n'
 
-                    wireLength = row.iloc[0,1]
-
-                    VA_line_str += str(wireLength) + 'm\n'
+                    VA_line_str += getWireLength(wireLenDF, w, preRouteSim)
 
                     outFile_sp
 
@@ -349,6 +361,19 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath,
         #SPfile.write(''.join(eExp.readlines()))
         SP_list.write('\n')
         SPfile.write(eExp)
+
+def getWireLength(wireLenDF, df_index, preRouteSim):
+    if not preRouteSim:
+        row = wireLenDF.loc[wireLenDF.iloc[:,0] == df_index]
+        wireLength = row.iloc[0,1]
+        #return str(wireLength) + 'm\n'
+        #VA_line_str += str(wireLength) + 'm\n'
+    else:
+        wireLength = 0
+        #VA_line_str += str(wireLength) + 'm\n'
+
+    return str(wireLength) + 'm\n'
+
 
 def createChemSubArrays(solnDF):
 
