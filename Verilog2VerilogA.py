@@ -63,6 +63,7 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, lib
 
     library = pd.read_csv(library_csv)
     wireLenDF = pd.read_excel(inFile_lengths)
+    #wireLenDF = wireLenDF.set_index([0])
 
     # load solution concentrations
     solnDF = pd.read_csv(solnFile)
@@ -203,7 +204,10 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, lib
                 for p in params:
                     VA_line_str += 'X' + str(numberOfComponents) + ' ' + str(p) + '_0 ' + str(p) + '_1  ' + str(p) + '_0c ' + str(p) + '_1c Channel length='
                     # get wire length fro wire length file
-                    row = wireLenDF.loc[wireLenDF['wire'] == p]
+                    #print(wireLenDF.columns)
+                    #print(wireLenDF.iloc[:,0])
+                    # wireLenDF['wire'] == p
+                    row = wireLenDF.loc[wireLenDF.iloc[:,0] == p]
                     wireLength = row.iloc[0,1]
                     VA_line_str += str(wireLength) + 'm\n'
 
@@ -231,7 +235,8 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, lib
                     SP_list.write(chemOut + ';')
 
                     # add output wire
-                    row = wireLenDF.loc[wireLenDF['wire'] == out]
+                    # row = wireLenDF.loc[wireLenDF['wire'] == out]
+                    row = wireLenDF.loc[wireLenDF.iloc[:,0] == out]
                     wireLength = row.iloc[0,1]
                     VA_line_str += str(wireLength) + 'm\n\n'
 
@@ -253,7 +258,8 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, lib
                     # string
                     VA_line_str += 'X' + str(numberOfComponents) + ' ' + str(w) + '_0 ' + str(w) + '_1 ' + ' ' + str(w) + '_0c ' + str(w) + '_1c  ' + 'Channel length='
 
-                    row = wireLenDF.loc[wireLenDF['wire'] == w]
+                    #row = wireLenDF.loc[wireLenDF['wire'] == w]
+                    row = wireLenDF.loc[wireLenDF.iloc[:,0] == w]
 
                     wireLength = row.iloc[0,1]
 
@@ -356,20 +362,25 @@ def createSpiceRunScript(outputFileName, numSoln, remoteTestPath):
     
     # make run spice file
 
+    # convert to linux dir symbol
     outputFileName = outputFileName.replace('\\', '/')
     outputPath = ''
 
     if len(outputFileName.split('/')) > 1:
         fileCharLen = len(outputFileName.split('/')[-1])
-        outputPath = outputFileName[:-fileCharLen]
+        outputPathLocal = outputFileName[:-fileCharLen]
+        outputPathRemote = "./" + "/".join(outputFileName.split('/')[outputFileName.split('/').index('testFiles'):-2])
         outputFileName = outputFileName[-fileCharLen:]
+        #outputPath = "/".join(outputFileName.split('/')[-outputFileName.index('testFiles'):-1])
 
+    # init file lines
     if numSoln == 0:
-        simScript = open(outputPath + '/' + "runSims.csh", '+w')
+        simScript = open(outputPathLocal + '/' + "runSims.csh", '+w')
         simScript.write('#/bin/tcsh\n\n')
-        simScript.write('cd ' + outputPath.replace('./', remoteTestPath) + "\n\n")
+        simScript.write('cd ' + outputPathRemote.replace('./', remoteTestPath) + "\n\n")
+    # run file
     else:
-        simScript = open(outputPath + '/' + "runSims.csh", 'a')
+        simScript = open(outputPathLocal + '/' + "runSims.csh", 'a')
     
     if outputFileName[:1] == './': 
         rm_start = 2
