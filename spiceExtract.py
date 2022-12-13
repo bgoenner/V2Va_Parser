@@ -94,7 +94,7 @@ def parseSpiceOut(filePath, fileList, device):
             print('Error:' + "{:.2f}".format(chemError) + '\tchem:' + chem + '\tout:' + v_outName)
 
     
-    concentrationDF.to_csv(device + '_' + filePath.replace('spiceFiles/', '') + 'chemicalOutput.csv')
+    concentrationDF.to_csv(filePath.replace('spiceFiles/', '') + device + '_chemicalOutput.csv')
 
     total_C = sum(TR_c)
 
