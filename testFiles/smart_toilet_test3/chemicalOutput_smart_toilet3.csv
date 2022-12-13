@@ -1,0 +1,4 @@
+,Outlet,Chemical,OutConcentration,ExpectedConcentration,Error
+0,outc0,chem1,0.08842051,0.0892,0.8738677130044928
+1,outc0,chem2,0.01038369,0.0892,88.35909192825112
+2,outc0,chem3,0.001195804,0.0008,49.47549999999999

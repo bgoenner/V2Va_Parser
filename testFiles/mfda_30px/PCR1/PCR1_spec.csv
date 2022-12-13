@@ -1,7 +1,7 @@
 Inlet,Solution,InConcentration,Outlet,OutConcentration
-soln1,F Prime,100m,out,0.01m
-soln2,R Prime,100m,out,0.01m
-soln3,Evagreen,100m,out,0.05m
-soln4,H2O,100m,out,0.23m
-soln5,Taq,100m,out,0.5m
-soln6,DNA,100m,out,0.2m
+soln1,chem1,100m,out,89.2m
+soln2,chem2,100m,out,10m
+soln3,chem3,100m,out,0.8m
+soln4,chem4,100m,out,0.8m
+soln5,chem5,100m,out,0.8m
+soln6,chem6,100m,out,0.8m

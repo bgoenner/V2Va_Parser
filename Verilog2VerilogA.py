@@ -16,7 +16,8 @@ library file, or -lib; this can be written into the vmf file
 template file, or -mfsp; this adds additional start and ending file information
 """
 
-def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, library_csv, outputVerilogFile=None):
+def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, 
+    library_csv, length_file=None, outputVerilogFile=None):
 
 
     inputVerilogFile = inputVerilogFile.replace('\\', '/')
@@ -24,7 +25,10 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath, lib
     #inFile_Verilog = "smart_toilet.v"
     inFile_Verilog = inputVerilogFile
     #inFile_lengths = "smart_toilet_lengths.xlsx"
-    inFile_lengths = inputVerilogFile[:-2] + "_lengths.xlsx"
+    if length_file == None:
+        inFile_lengths = inputVerilogFile[:-2] + "_lengths.xlsx"
+    else:
+        inFile_lengths = length_file
     #print(inFile_lengths)
     #remoteTestPath = "~/Verilog_Tests/"
 
@@ -369,7 +373,11 @@ def createSpiceRunScript(outputFileName, numSoln, remoteTestPath):
     if len(outputFileName.split('/')) > 1:
         fileCharLen = len(outputFileName.split('/')[-1])
         outputPathLocal = outputFileName[:-fileCharLen]
-        outputPathRemote = "./" + "/".join(outputFileName.split('/')[outputFileName.split('/').index('testFiles'):-2])
+        # used in testing
+        #if 'testFiles' in outputFileName.split('/'):
+        #    outputPathRemote = "./" + "/".join(outputFileName.split('/')[outputFileName.split('/').index('testFiles'):-2])
+        #else:
+        #    outputPathRemote = "/".join(outputFileName.split('/')[:-2])
         outputFileName = outputFileName[-fileCharLen:]
         #outputPath = "/".join(outputFileName.split('/')[-outputFileName.index('testFiles'):-1])
 
@@ -377,7 +385,8 @@ def createSpiceRunScript(outputFileName, numSoln, remoteTestPath):
     if numSoln == 0:
         simScript = open(outputPathLocal + '/' + "runSims.csh", '+w')
         simScript.write('#/bin/tcsh\n\n')
-        simScript.write('cd ' + outputPathRemote.replace('./', remoteTestPath) + "\n\n")
+        #simScript.write('cd ' + outputPathRemote.replace('./', remoteTestPath) + "\n\n")
+        simScript.write('cd ' + remoteTestPath + "\n\n")
     # run file
     else:
         simScript = open(outputPathLocal + '/' + "runSims.csh", 'a')

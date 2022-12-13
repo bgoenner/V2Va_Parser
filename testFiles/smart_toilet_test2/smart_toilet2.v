@@ -10,14 +10,15 @@ output  out;
 
 // connect0,  
 
-wire    connect1,  connect2,  connect3,  connect4,  connect5,  connect6,  connect7;
+wire    connect1,  connect1_1,  connect2,  connect3,  connect4,  connect5,  connect6,  connect7;
 //,  connect8,  connect9,
 //        connect10, connect11, connect12;
 
 serpentine_25px_0   serp0   (.in_fluid(soln1), .out_fluid(connect0));
 
 serpentine_50px_0   serp1   (.in_fluid(soln2), .out_fluid(connect1));
-serpentine_150px_0  serp2   (.in_fluid(connect1), .out_fluid(connect2));
+serpentine_50px_0   serp1   (.in_fluid(connect1_1), .out_fluid(connect1_1));
+serpentine_100px_0  serp2   (.in_fluid(connect1), .out_fluid(connect2));
 
 // diffmix_25px_0      mix0    (.a_fluid(soln1), .b_fluid(connect2), .out_fluid(connect3));
 diffmix_25px_0      mix0    (.a_fluid(connect0), .b_fluid(connect2), .out_fluid(connect3));

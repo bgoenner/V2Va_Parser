@@ -1,0 +1,7 @@
+Inlet,Solution,InConcentration,Outlet,OutConcentration
+soln1,FPrime,100m,out,1m
+soln2,RPrime,100m,out,1m
+soln3,Evagreen,100m,out,5m
+soln4,H2O,100m,out,23m
+soln5,Taq,100m,out,50m
+soln6,DNA,100m,out,20m
