@@ -13,7 +13,7 @@ def parseSuffix(value):
         return float(value[:-1]) * 1e-3
 
 
-def parseSpiceOut(filePath, fileList, device):
+def parseSpiceOut(filePath, fileList, device,  spiceFilePath=None, preRoute=False):
     TRdata = []
     TR_c   = []
 
@@ -21,10 +21,18 @@ def parseSpiceOut(filePath, fileList, device):
     outputC = " v_outc0"
 
     # List of outputs
-    spOutList = pd.read_csv(filePath + fileList)
+    if spiceFilePath == None:
+        spiceFilePath = filePath
+
+    spOutList = pd.read_csv(spiceFilePath + fileList)
 
     # Output dataframe
     concentrationDF = pd.DataFrame(columns=['Outlet', 'Chemical', 'OutConcentration', 'ExpectedConcentration', 'Error'])
+
+    if preRoute:
+        device = device + '_preRoute'
+
+    
 
     print('Device: ' + device)
 
@@ -57,7 +65,10 @@ def parseSpiceOut(filePath, fileList, device):
         outletA = outlets.split(';')[:-1]
 
         # Read spec file
-        specFile = filePath.replace('spiceFiles/', '') + device + '_spec.csv'
+        
+        specFile = filePath.replace('spiceFiles/', '') + '/' + device + '_spec.csv'
+        if preRoute :
+            specFile = specFile.replace('preRoute/', '').replace('preRoute_', '')
         specDF = pd.read_csv(specFile)
 
         # get value for output and chem
@@ -94,7 +105,7 @@ def parseSpiceOut(filePath, fileList, device):
             print('Error:' + "{:.2f}".format(chemError) + '\tchem:' + chem + '\tout:' + v_outName)
 
     
-    concentrationDF.to_csv(filePath.replace('spiceFiles/', '') + device + '_chemicalOutput.csv')
+    concentrationDF.to_csv(filePath.replace('spiceFiles/', '') + '/' + device + '_chemicalOutput.csv')
 
     total_C = sum(TR_c)
 

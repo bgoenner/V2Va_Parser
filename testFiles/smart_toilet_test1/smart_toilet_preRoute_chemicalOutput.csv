@@ -1,0 +1,4 @@
+,Outlet,Chemical,OutConcentration,ExpectedConcentration,Error
+0,outc0,H2O,0.09608436,0.0892,7.717892376681605
+1,outc0,Sample,0.0,0.0008,100.0
+2,outc0,Tag,0.003915642,0.01,60.843579999999996

@@ -93,8 +93,12 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath,
     devFile = SP_outputFile_path + "/devices.csv"
     devDF = pd.read_csv(devFile)
 
-    SP_outputFile_path = SP_outputFile_path + "spiceFiles/" 
-    SP_outputFile_name = SP_outputFile_path + inFile_Verilog.split('/')[-1]
+    if preRouteSim:
+        SP_outputFile_path = SP_outputFile_path + "spiceFiles/preRoute/" 
+        SP_outputFile_name = SP_outputFile_path + 'preR_' + inFile_Verilog.split('/')[-1]
+    else:
+        SP_outputFile_path = SP_outputFile_path + "spiceFiles/" 
+        SP_outputFile_name = SP_outputFile_path + inFile_Verilog.split('/')[-1]
 
     
 
@@ -362,6 +366,8 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath,
         SP_list.write('\n')
         SPfile.write(eExp)
 
+    return SP_outputFile_path
+
 def getWireLength(wireLenDF, df_index, preRouteSim):
     if not preRouteSim:
         row = wireLenDF.loc[wireLenDF.iloc[:,0] == df_index]
@@ -369,7 +375,7 @@ def getWireLength(wireLenDF, df_index, preRouteSim):
         #return str(wireLength) + 'm\n'
         #VA_line_str += str(wireLength) + 'm\n'
     else:
-        wireLength = 0
+        wireLength = 0.00001
         #VA_line_str += str(wireLength) + 'm\n'
 
     return str(wireLength) + 'm\n'
