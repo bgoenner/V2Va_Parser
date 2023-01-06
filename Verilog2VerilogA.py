@@ -25,6 +25,10 @@ def Verilog2VerilogA(inputVerilogFile, configFile, solnFile, remoteTestPath,
     #inFile_Verilog = "smart_toilet.v"
     inFile_Verilog = inputVerilogFile
     #inFile_lengths = "smart_toilet_lengths.xlsx"
+    print('\n\n----------------------------------------------------------')
+    print("PreRoute:" + str(preRouteSim) + "")
+    print('----------------------------------------------------------\n\n')
+
     if not preRouteSim:
         if length_file == None:
             inFile_lengths = inputVerilogFile[:-2] + "_lengths.xlsx"
