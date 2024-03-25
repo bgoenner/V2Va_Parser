@@ -11,6 +11,14 @@ import io
 import os
 import sys
 
+module_reg = r"\s*module\s*(?P<module>\s*[a-zA-Z][\w]*)\s*\((?P<ports>[\s*\w*,]*)\)\s*;(?P<module_netlist>[\w*\s*,;\(\)\.]*)endmodule"
+input_reg  = r"^[ ]*input\s*(?P<input_port>[\w*, \n]*);"
+output_reg = r"^[ ]*output\s*(?P<output_port>[\w*, \n]*);"
+wire_reg   = r"^[ ]*wire\s*(?P<wires>[\w*, \n]*);"
+comp_reg   = r"^[ ]*(?P<component>[a-zA-Z][\w]*)\s*(?P<name>[a-zA-Z][\w]*)\s*\((?P<ports>[\w\(\),\s.]*)\)\s*;"
+single_mod_reg = r"^[ ]*(module\s*(?P<module_name>[a-zA-Z][\w]*)\s*\((?P<module_ports>[\s\w,]*\);)|wire\s*(?P<wires>[a-zA-Z][\w\s,]*);|input\s*(?P<in_ports>[a-zA-Z][\w\s,]*);|output\s*(?P<out_ports>[a-zA-Z][\w\s,]*);|(?P<component>[a-zA-Z][\w]*)\s*(?P<name>[a-zA-Z][\w]*)\s*\((?P<ports>[\w\(\),\s.]*)\)\s*;)"
+component_port_reg = r".(?P<component_port>[a-zA-Z][\w]*)\s*\(\s*(?P<net_port>[a-zA-Z][\w]*)\s*\)\s*"
+
 """
 input arguments
 
