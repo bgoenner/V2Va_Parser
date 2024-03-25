@@ -34,7 +34,9 @@ def Parse_Verilog(
         outputVerilogFile=None,
         probeList=None,
         parser="XYCE", 
-        runScipt=True):
+        runScipt=True,
+        spiceOutputDir="spiceFiles",
+        spiceOutputRelative=True):
 
     inputVerilogFile = inputVerilogFile.replace('\\', '/')
     # input file declaration
@@ -120,13 +122,17 @@ def Parse_Verilog(
     for s in SP_outputFile_pathA: SP_outputFile_path += s + "/"
 
     
-
-    if preRouteSim:
-        SP_outputFile_path = SP_outputFile_path + "spiceFiles/preRoute/" 
-        SP_outputFile_name = SP_outputFile_path + 'preR_' + inFile_Verilog.split('/')[-1]
+    if spiceOutputRelative:
+        if preRouteSim:
+            SP_outputFile_path = SP_outputFile_path + spiceOutputDir +"/preRoute/" 
+            SP_outputFile_name = SP_outputFile_path + 'preR_' + inFile_Verilog.split('/')[-1]
+        else:
+            SP_outputFile_path = SP_outputFile_path + spiceOutputDir + "/" 
+            SP_outputFile_name = SP_outputFile_path + inFile_Verilog.split('/')[-1]
     else:
-        SP_outputFile_path = SP_outputFile_path + "spiceFiles/" 
-        SP_outputFile_name = SP_outputFile_path + inFile_Verilog.split('/')[-1]
+        SP_outputFile_path = spiceOutputDir
+        SP_outputFile_name = spiceOutputDir + inFile_Verilog.split('/')[-1]
+
 
     if not os.path.exists(SP_outputFile_path):
         os.mkdir(SP_outputFile_path)
