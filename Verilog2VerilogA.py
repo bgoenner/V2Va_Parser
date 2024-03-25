@@ -93,20 +93,13 @@ def Verilog2VerilogA(inputVerilogFile,
 
 
     # load solution concentrations
-    #solnDF = pd.read_csv(solnFile)
-    # used to keep track of appending to run sim file
     numSoln = 0
 
     # load device file ------------------------------------
     #devDF = pd.read_csv(devFile)
 
     # load time file
-    #timeDF = pd.read_csv(timeFile)
 
-    #SP_file_list = 
-    # write to spice files
-    # path/newfile/file.v
-    #SP_outputFile_name = inFile_Verilog[:-2] + '_' + soln[1].loc['inlet'] + '.sp'
     SP_outputFile_pathA= inFile_Verilog.split('/')[:-1]
     SP_outputFile_path = ""
 
@@ -352,6 +345,8 @@ def parseInput(vars,
                 str(p) + '_0 ' + str(p) + '_1 ' + \
                 str(p) + '_0c ' + str(p) + '_1c length='
             row = wireLenDF.loc[wireLenDF['wire'] == p]
+            
+
             try:
                 wireLength = row.iloc[0,1]
             except IndexError:
